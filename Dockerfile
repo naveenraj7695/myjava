@@ -1,25 +1,12 @@
-# Use Maven to build the application
-FROM maven:3.8.6-jdk-11 AS build
+# Use an official Java runtime as a parent image with Java 17
+FROM openjdk:17-jre-slim
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the pom.xml and install dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# Copy the local JAR file to the container
+COPY target/employee-1.0.0-runner.jar /app/employee-1.0.0-runner.jar
 
-# Copy the source code and package the application
-COPY src ./src
-RUN mvn package
+# Command to run the JAR file
+ENTRYPOINT ["java", "-jar", "myjava.jar"]
 
-# Use an OpenJDK image to run the application
-FROM openjdk:11-jre-slim
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/your-app.jar ./your-app.jar
-
-# Define the command to run your app
-ENTRYPOINT ["java", "-jar", "your-app.jar"]
